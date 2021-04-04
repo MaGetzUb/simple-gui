@@ -13,7 +13,7 @@ public:
 		rootPane.flow = gui::Flow::Vertical;
 
 		gui::TextBox& display = man.create<gui::TextBox>(rootPane.id());
-		display.bounds.height = 40;
+		display.size.height = 40;
 		display.flex = 0;
 		display.readOnly = true;
 		display.alignment = gui::Alignment::Right;
@@ -26,7 +26,7 @@ public:
 			'.', '0', '=', L'÷'
 		};
 
-		gui::Container& funcRow = man.create<gui::Container>(rootPane.id(), gui::Rect{ 0, 0, 800, 50 }, gui::Flow::Horizontal);
+		gui::Container& funcRow = man.create<gui::Container>(rootPane.id(), gui::Size{ 800, 50 }, gui::Flow::Horizontal);
 		funcRow.flex = 0;
 		funcRow.border = 0;
 
@@ -54,12 +54,12 @@ public:
 		}
 
 		for (int i = 0; i < 4; i++) {
-			gui::Container& row = man.create<gui::Container>(rootPane.id(), gui::Rect{ 0, 0, 800, 50 }, gui::Flow::Horizontal);
+			gui::Container& row = man.create<gui::Container>(rootPane.id(), gui::Size{ 800, 50 }, gui::Flow::Horizontal);
 			row.flex = 0;
 			row.border = 0;
 			for (int j = 0; j < 4; j++) {
 				wchar_t cop = keypad[j + i * 4];
-				gui::Button& numBtn = man.create<gui::Button>(row.id(), std::wstring(1, cop));
+				gui::Button& numBtn = man.create<gui::Button>(row.id(), gui::String(1, cop));
 				numBtn.fontSize = 28;
 				numBtn.onPressed = [&]() {
 					wchar_t chr = numBtn.text[0];
@@ -110,7 +110,7 @@ public:
 							if (display.text == L"0") {
 								display.text = L"";
 							}
-							display.text += std::wstring(1, chr);
+							display.text += gui::String(1, chr);
 							display.updateAttributes();
 							break;
 					}
@@ -118,7 +118,7 @@ public:
 			}
 		}
 
-		man.create<gui::Text>(rootPane.id(), L"Made by Diego");
+		man.create<gui::Label>(rootPane.id(), L"Made by Diego");
 
 		resize(300, 355);
 	}
@@ -128,9 +128,33 @@ public:
 	bool solved{ false };
 };
 
+class WidgetsTest : public gui::Window {
+public:
+	void onCreate(gui::Manager& man) override {
+		setTitle(L"Widgets");
+
+		gui::Container& rootPane = root();
+		rootPane.flow = gui::Flow::Vertical;
+
+		gui::ListBox& lb = man.create<gui::ListBox>(rootPane.id());
+		lb.size.height = 200;
+		for (int i = 0; i < 100; i++) {
+			lb.add(new gui::SimpleListBoxItem(gui::String(L"Item ") + std::to_wstring(i+1)));
+		}
+		lb.select(5);
+
+		lb.onSelected = [](int idx, gui::ListBoxItem* text) {
+			std::wcout << L"Selected: " << text->toString() << std::endl;
+		};
+	}
+};
+
 int main(int argc, char** argv) {
-	Calculator cal1{};
-	cal1.show();
+	//Calculator cal1{};
+	//cal1.show();
+
+	WidgetsTest wt{};
+	wt.show();
 
 	gui::Window::mainLoop();
 	
